@@ -42,26 +42,15 @@ client.voiceGenerator = collection;
 ].forEach((handler) => require(`./event/handler/${handler}`)(client, fs));
 
 process.on("unhandledRejection", (reason, promise) => {
-  console.log(`${reason}`.red);
+  console.log(`${reason}`);
 });
 process.on("uncaughtException", (err) => {
-  console.log(`${err}`.red);
+  console.log(`${err}`);
 });
 
 process.on("uncaughtExceptionMonitor", (err, origin) => {
-  console.log(`${err}`.red);
+  console.log(`${err}`);
 });
-
-mongoose.set("strictQuery", true);
-connect(process.env.MONGODBURL, {
-  keepAlive: true,
-  dbName: "bot",
-})
-  .then(console.log("The bot is Connected to the Database"))
-
-  .catch((error) => {
-    console.log(error);
-  });
 
 client
   .login(process.env.TOKEN)
@@ -69,6 +58,19 @@ client
     console.log(`The bot ${client.user.tag} is on:
         ${client.guilds.cache.size} guild(s)`);
   })
+
+  .then(() => {
+    connect(process.env.MONGODBURL, {
+      dbName: "bot",
+      directConnection: true,
+    })
+      .then(console.log("The bot is Connected to the Database"))
+
+      .catch((error) => {
+        console.log(error);
+      });
+  })
+
   .catch((error) => {
     console.log(error);
   });

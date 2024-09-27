@@ -16,15 +16,15 @@ module.exports = {
 
         .addStringOption((option) =>
           option
-            .setName("reaction")
-            .setDescription("The reaction to add")
+            .setName("emoji")
+            .setDescription("Emoji from the Game")
             .setRequired(true)
         )
 
         .addStringOption((option) =>
           option
-            .setName("role")
-            .setDescription("The role to add")
+            .setName("gamename")
+            .setDescription("Game Name")
             .setRequired(true)
         )
     )

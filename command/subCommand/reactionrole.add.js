@@ -2,6 +2,9 @@ const {
   ChatInputCommandInteraction,
   Client,
   EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
 } = require("discord.js");
 
 module.exports = {
@@ -13,11 +16,11 @@ module.exports = {
    * @param {Client} client
    */
   async execute(interaction, client) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply();
     const reactionroleDB = require("../../event/schema/reactionroleDB");
 
-    const reaction = interaction.options.getString("reaction");
-    const roleid = interaction.options.getString("role");
+    const reaction = interaction.options.getString("emoji");
+    const game = interaction.options.getString("gamename");
     const chanel = process.env.REACTIONSROLESCHANNEL;
 
     await interaction.editReply({
@@ -26,15 +29,18 @@ module.exports = {
     });
 
     const data = await reactionroleDB.findOne({
-      RoleID: roleid.toLowerCase(),
-      Reaction: reaction,
+      Name: game.toLowerCase(),
     });
 
     if (data) {
-      return interaction.reply({
-        content: "This reaction role already exists",
-        ephemeral: true,
-      });
+      return interaction
+        .editReply({
+          content: "This reaction role already exists",
+          ephemeral: true,
+        })
+        .then(() => {
+          return interaction.deleteReply();
+        });
     }
 
     await interaction.editReply({
@@ -43,45 +49,45 @@ module.exports = {
     });
 
     const role = await interaction.guild.roles.create({
-      name: "Reaction: " + roleid,
+      name: "Reaction: " + game,
       color: "Random",
       permissions: [],
       mentionable: true,
     });
+
     await interaction.editReply({
       content: "Role created",
       ephemeral: true,
     });
 
-    const message = await client.channels.cache.get(chanel).send({
-      embeds: [
-        new EmbedBuilder().setDescription(
-          [
-            `## React to get the role`,
-            ``,
-            `**Role:** <@&${role.id}>`,
-            `**Reaction**: ${reaction}`,
-          ].join("\n")
-        ),
-      ],
-    });
-
-    await message.react(reaction);
-
-    await reactionroleDB.create({
-      Reaction: reaction,
-      RoleID: role.id,
-      MessageID: message.id,
-    });
-
     const embed = new EmbedBuilder()
-      .setTitle("Reaction Role Added")
-      .setDescription(`Reaction: ${reaction}\nRole: <@&${role.id}>`)
+      .setTitle("Reaction Role")
+      .setDescription(
+        `Reaction: ${reaction}`,
+        `Role: <@&${role.id}>`,
+        `Game: ${game}`
+      )
       .setColor("Green");
 
     await interaction.editReply({
       embeds: [embed],
-      ephemeral: true,
+      components: [
+        new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId("reactionroles")
+            .setLabel(game)
+            .setStyle(ButtonStyle.Secondary)
+            .setEmoji(reaction)
+        ),
+      ],
+    });
+
+    await reactionroleDB.create({
+      Name: game.toLowerCase(),
+      RoleID: role.id,
+      Emoji: reaction,
+      MessageID: interaction.channel.lastMessageId,
+      ChannelID: chanel,
     });
   },
 };

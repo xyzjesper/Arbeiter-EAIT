@@ -3,5 +3,10 @@ const { String } = require("../util/schemaArguments");
 
 module.exports = model(
   "reactionrole",
-  new Schema({ Reaction: String, RoleID: String, MessageID: String })
+  new Schema({
+    Reaction: String,
+    RoleID: String,
+    MessageID: String,
+    Name: String,
+  })
 );
