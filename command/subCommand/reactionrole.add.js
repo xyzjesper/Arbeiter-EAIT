@@ -5,6 +5,7 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  ChannelType,
 } = require("discord.js");
 
 module.exports = {
@@ -68,6 +69,19 @@ module.exports = {
         `Game: ${game}`
       )
       .setColor("Green");
+
+    await interaction.editReply({
+      content: "Create Channel",
+      ephemeral: true,
+    });
+
+    const kate = process.env.REACTIONSROLESCHANNEL;
+
+    await interaction.guild.channels.create({
+      name: game.toLowerCase(),
+      type: ChannelType.GuildText,
+      parent: kate,
+    });
 
     await interaction.editReply({
       embeds: [embed],
