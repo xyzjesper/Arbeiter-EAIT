@@ -13,12 +13,7 @@ ENV MONGODBURL=0
 ENV REACTIONSROLESCHANNEL=0
 ENV WELCOMECHANNEL=0
 ENV ADMINGUILDID=0
-
-
-RUN useradd -m -d /home/container container
-USER container
-ENV USER=container HOME=/app
-ENV DEBIAN_FRONTEND noninteractive
+ENV GAMEKATE=0
 
 # DisBot ghcr.io/jesperrichert/eaitbot:latest
 CMD [ "node", "index.js" ]
