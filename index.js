@@ -31,14 +31,10 @@ client.voiceGenerator = collection;
   "commands",
   "events",
   "buttons",
-  "selectmenus",
-  "modals",
   "database",
   "commandInteractions",
   "clientEvents",
   "buttonInteractions-button",
-  "selectmenuInteractions",
-  "modalInteractions",
 ].forEach((handler) => require(`./event/handler/${handler}`)(client, fs));
 
 process.on("unhandledRejection", (reason, promise) => {
